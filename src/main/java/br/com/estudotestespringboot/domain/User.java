@@ -1,5 +1,7 @@
 package br.com.estudotestespringboot.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -18,6 +20,7 @@ public class User {
 
 	@Column(unique = true)
 	private String email;
+
 	private String password;
 
 	public User() {
