@@ -2,6 +2,7 @@ package br.com.estudotestespringboot.impl;
 
 import br.com.estudotestespringboot.domain.User;
 import br.com.estudotestespringboot.dto.UserDTO;
+import br.com.estudotestespringboot.exceptions.ObjectNotFoundException;
 import br.com.estudotestespringboot.repositories.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,6 +58,22 @@ class UserServiceImplTest {
         assertEquals(ID,response.getId());
         assertEquals(NAME, response.getName());
         assertEquals(EMAIL, response.getEmail());
+    }
+
+    //quando não achar o objeto de acordo com o id passado, retorne uma exceção de objeto não encontrado
+    @Test
+    void whenFindBuyIdThenReturnAnObjectNotFoundException(){
+        //Mocando uma resposta para a busca por id
+        when(repository.findById(anyInt())).thenThrow(new ObjectNotFoundException("Objeto não encontrado"));
+        try {
+            service.findById(ID);
+        }catch (Exception ex){
+            assertEquals(ObjectNotFoundException.class, ex.getClass());
+            //Garanta que a mensagem da exceção seja igual a informada
+            assertEquals("Objeto não encontrado", ex.getMessage());
+
+
+        }
 
     }
 
