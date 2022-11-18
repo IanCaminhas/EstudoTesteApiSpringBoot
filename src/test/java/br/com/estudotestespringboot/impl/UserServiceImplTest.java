@@ -14,6 +14,7 @@ import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,6 +27,7 @@ class UserServiceImplTest {
     private static final String EMAIL = "caminhasian@gmail.com";
     private static final String PASSWORD ="123";
     public static final String OBJETO_NÃO_ENCONTRADO = "Objeto não encontrado";
+    public static final int INDEX = 0;
 
     @InjectMocks
     private UserServiceImpl service;
@@ -72,14 +74,27 @@ class UserServiceImplTest {
             assertEquals(ObjectNotFoundException.class, ex.getClass());
             //Garanta que a mensagem da exceção seja igual a informada
             assertEquals("Objeto não encontrado", ex.getMessage());
-
-
         }
-
     }
 
     @Test
-    void findAll() {
+    void whenFindAllThenReturnAnListOfUsers() {
+        //Quando o repository.findAll() for chamado, retorne a lista de apenas um usuário
+        when(repository.findAll()).thenReturn(List.of(user));
+
+        List<User> response = service.findAll();
+        //assegure que a lista não veio vazia
+        assertNotNull(response);
+        //Assegure que  lista possua 1 usuário
+        assertEquals(1,response.size());
+        //Quero assegurar que o primeiro elemento seja da classe User
+        assertEquals(User.class, response.get(0).getClass());
+        //Quero assegurar que o ID retornado é igual ao ID constante
+        assertEquals(ID, response.get(INDEX).getId());
+
+        assertEquals(NAME, response.get(INDEX).getName());
+        assertEquals(EMAIL, response.get(INDEX).getEmail());
+        assertEquals(PASSWORD, response.get(INDEX).getPassword());
     }
 
     @Test
