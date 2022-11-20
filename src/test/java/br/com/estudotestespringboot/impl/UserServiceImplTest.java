@@ -2,6 +2,7 @@ package br.com.estudotestespringboot.impl;
 
 import br.com.estudotestespringboot.domain.User;
 import br.com.estudotestespringboot.dto.UserDTO;
+import br.com.estudotestespringboot.exceptions.DataIntegratyViolationException;
 import br.com.estudotestespringboot.exceptions.ObjectNotFoundException;
 import br.com.estudotestespringboot.repositories.UserRepository;
 import org.junit.jupiter.api.Assertions;
@@ -106,13 +107,23 @@ class UserServiceImplTest {
         assertNotNull(response);
         //O response retornado seja do tipo User
         assertEquals(User.class, response.getClass());
-
         assertEquals(ID,response.getId());
         assertEquals(NAME,response.getName());
         assertEquals(EMAIL,response.getEmail());
         assertEquals(PASSWORD,response.getPassword());
+    }
 
+    @Test
+    void whenCreateThenReturnAnDataIntegrityViolationException() {
+        when(repository.findByEmail(anyString())).thenReturn(optionalUser);
 
+        try {
+            optionalUser.get().setId(2);
+            service.create(userDTO);
+        }catch (Exception ex){
+            assertEquals(DataIntegratyViolationException.class, ex.getClass());
+            assertEquals("E-mail já cadastrado no sistema", ex.getMessage());
+        }
     }
 
     @Test
