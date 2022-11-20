@@ -23,11 +23,12 @@ import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class UserServiceImplTest {
+    public static final String EMAIL_JA_CADASTRADO_NO_SISTEMA = "E-mail já cadastrado no sistema";
     private static final String NAME = "IAN";
     private static final Integer ID  = 1;
     private static final String EMAIL = "caminhasian@gmail.com";
     private static final String PASSWORD ="123";
-    public static final String OBJETO_NÃO_ENCONTRADO = "Objeto não encontrado";
+    public static final String OBJETO_NAO_ENCONTRADO = "Objeto não encontrado";
     public static final int INDEX = 0;
 
     @InjectMocks
@@ -68,7 +69,7 @@ class UserServiceImplTest {
     @Test
     void whenFindBuyIdThenReturnAnObjectNotFoundException(){
         //Mocando uma resposta para a busca por id
-        when(repository.findById(anyInt())).thenThrow(new ObjectNotFoundException(OBJETO_NÃO_ENCONTRADO));
+        when(repository.findById(anyInt())).thenThrow(new ObjectNotFoundException(OBJETO_NAO_ENCONTRADO));
         try {
             service.findById(ID);
         }catch (Exception ex){
@@ -122,7 +123,7 @@ class UserServiceImplTest {
             service.create(userDTO);
         }catch (Exception ex){
             assertEquals(DataIntegratyViolationException.class, ex.getClass());
-            assertEquals("E-mail já cadastrado no sistema", ex.getMessage());
+            assertEquals(EMAIL_JA_CADASTRADO_NO_SISTEMA, ex.getMessage());
         }
     }
 
@@ -150,7 +151,7 @@ class UserServiceImplTest {
             service.update(userDTO);
         }catch (Exception ex){
             assertEquals(DataIntegratyViolationException.class, ex.getClass());
-            assertEquals("E-mail já cadastrado no sistema", ex.getMessage());
+            assertEquals(EMAIL_JA_CADASTRADO_NO_SISTEMA, ex.getMessage());
         }
     }
 
@@ -159,16 +160,23 @@ class UserServiceImplTest {
         when(repository.findById(anyInt())).thenReturn(optionalUser);
         //Não faça nada quando o meu repository.delete() for invocado
         doNothing().when(repository).deleteById(anyInt());
-
         service.delete(ID);
-
         //estou vericando quantas vezes o repository foi chamado no método deleteById
         //Se for mais de 1 vez, tem coisa errada no código
         verify(repository,times(1)).deleteById(anyInt());
+    }
 
+    @Test
+    void deteleWithObjectNotFoundException(){
+        when(repository.findById(anyInt()))
+                .thenThrow(new ObjectNotFoundException(OBJETO_NAO_ENCONTRADO));
+        try{
+            service.delete(ID);
+        }catch (Exception ex){
+            assertEquals(ObjectNotFoundException.class, ex.getClass());
+            assertEquals(OBJETO_NAO_ENCONTRADO, ex.getMessage());
 
-
-
+        }
     }
 
 
