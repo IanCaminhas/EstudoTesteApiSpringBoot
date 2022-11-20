@@ -141,10 +141,36 @@ class UserServiceImplTest {
         assertEquals(PASSWORD,response.getPassword());
     }
 
+    @Test
+    void whenUpdateThenReturnAnDataIntegrityViolationException() {
+        when(repository.findByEmail(anyString())).thenReturn(optionalUser);
+
+        try {
+            optionalUser.get().setId(2);
+            service.update(userDTO);
+        }catch (Exception ex){
+            assertEquals(DataIntegratyViolationException.class, ex.getClass());
+            assertEquals("E-mail já cadastrado no sistema", ex.getMessage());
+        }
+    }
 
     @Test
-    void delete() {
+    void deleteWithSuccess() {
+        when(repository.findById(anyInt())).thenReturn(optionalUser);
+        //Não faça nada quando o meu repository.delete() for invocado
+        doNothing().when(repository).deleteById(anyInt());
+
+        service.delete(ID);
+
+        //estou vericando quantas vezes o repository foi chamado no método deleteById
+        //Se for mais de 1 vez, tem coisa errada no código
+        verify(repository,times(1)).deleteById(anyInt());
+
+
+
+
     }
+
 
     private void startUser(){
         user = new User(ID,NAME,EMAIL,PASSWORD);
