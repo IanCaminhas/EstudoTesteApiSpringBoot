@@ -98,7 +98,21 @@ class UserServiceImplTest {
     }
 
     @Test
-    void create() {
+    void whenCreateThenReturnSucess() {
+        when(repository.save(any())).thenReturn(user);
+        User response = service.create(userDTO);
+
+        //assegurando que a resposta não é nula
+        assertNotNull(response);
+        //O response retornado seja do tipo User
+        assertEquals(User.class, response.getClass());
+
+        assertEquals(ID,response.getId());
+        assertEquals(NAME,response.getName());
+        assertEquals(EMAIL,response.getEmail());
+        assertEquals(PASSWORD,response.getPassword());
+
+
     }
 
     @Test
