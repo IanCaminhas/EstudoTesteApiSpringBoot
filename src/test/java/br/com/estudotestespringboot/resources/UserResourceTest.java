@@ -22,7 +22,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class UserResourceTest {
@@ -118,11 +118,21 @@ class UserResourceTest {
         assertEquals(NAME,response.getBody().getName());
         assertEquals(EMAIL,response.getBody().getEmail());
         assertEquals(PASSWORD,response.getBody().getPassword());
-
     }
 
     @Test
-    void delete() {
+    void whenDeleteThenReturnSuccess() {
+        //não faça nada quando o metodo delete for invocado, passando qualquer inteiro [anyInt()]
+        doNothing().when(service).delete(anyInt());
+        ResponseEntity<UserDTO> response = resource.delete(ID);
+
+        assertNotNull(response);
+        assertEquals(ResponseEntity.class, response.getClass());
+        //Estou assegurando que o metodo delete() foi chamada apenas uma vez
+        verify(service,times(1)).delete(anyInt());
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+
+
 
     }
 
